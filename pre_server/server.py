@@ -34,6 +34,21 @@ def store_key():
     db.session.commit()
     return jsonify({'message': 'Re-encryption key stored successfully.'})
 
+@app.route('/delete_key', methods=['POST'])
+def delete_key():
+    data = request.get_json()
+    file_id = data['file_id']
+    requestor_id = data['requestor_id']
+    
+    key_to_delete = ReencryptionKey.query.filter_by(file_id=file_id, requestor_id=requestor_id).first()
+    
+    if key_to_delete is None:
+        return jsonify({'message': 'Re-encryption key not found.'}), 404
+
+    db.session.delete(key_to_delete)
+    db.session.commit()
+    return jsonify({'message': 'Re-encryption key deleted successfully.'})
+
 @app.route('/re_encrypt', methods=['POST'])
 def re_encrypt():
     # need to receive file_id, requestor_id, capsuleString, verifying_key_pem
