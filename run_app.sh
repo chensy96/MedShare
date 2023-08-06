@@ -171,12 +171,57 @@ while true; do
         pub_key_output=$(./gradlew run --args="$OPERATION2 $query2")
         pub_key_string=$(echo "$pub_key_output" | grep -oP 'Result: \K[^,]*')
         cd ..  
-        # curl -X POST -H "Content-Type: application/json" -d "{\"file_id\":\"$file_assetId\", \"requestor_id\":\"$MSP_ID\", \"capsule\":\"$file_fileKey\", \"verifying_key\":\"$verification_key_string\"}" http://localhost:5000/re_encrypt 
         requestor_ID="$(echo ${ORG:0:1} | tr '[:lower:]' '[:upper:]')${ORG:1}MSP"
         response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"file_id\":\"$file_assetId\", \"requestor_id\":\"$requestor_ID\", \"capsule\":\"$file_fileKey\", \"verifying_key\":\"$verification_key_string\"}" http://localhost:5000/re_encrypt)
         cfrag=$(echo $response | jq -r '.cfrag')
         ./file_retrieval.sh $file_assetId $file_fileKey $file_pointer $cfrag $pub_key_string | tee /dev/fd/2
         # have the file downloaded
+    elif [[ $OPERATION == "UpdateAclPermission" ]]; then
+        result=$(./gradlew run --args="$OPERATION $ARGS") 
+        if [[ $result == *"Failed"* ]]; then
+            cd ..
+            echo "You are not authorized to grant permission for this file."
+        else
+            cd ..
+            # Ask the user for the path to the public key PEM file
+            echo "Successfully updated acl list, now generating re-encryption keys for PRE servers."
+            echo "Enter the path to your signing key:"
+            read signing_key_path
+            echo "Enter the path to your private key:"
+            read private_key_path
+            # retrieve pubkeys of orgs on acl
+            OPERATION2="GetHistoryForAsset"
+            ID=$ARG2
+            assetID=$ARG1
+            extracted_id=${ID:0:-3}
+            extracted_id=$(echo "$extracted_id" | tr '[:upper:]' '[:lower:]')
+            echo "Generating PRE key for organization $extracted_id."
+            query="${ID}_public_key"
+            cd ./application-gateway-java
+            public_key_output=$(./gradlew run --args="$OPERATION2 $query")
+            public_key_string=$(echo "$public_key_output" | grep -oP 'Result: \K[^,]*')
+            cd .. 
+            # generate re-encryption key fragments and send them to PRE servers
+            kFragStrings=$(python3 encryption.py split_key "$private_key_path" "$public_key_string" "$signing_key_path")
+            # kFrag1=$(echo "$kFragStrings" | grep -oP 'kFragStrings: \K[^,]*')
+            kFrags=$(echo "$kFragStrings" | grep -oP 'kFragStrings: \K[^;]*')
+            kFrag1=$(echo "$kFrags" | tr ',' '\n' | sed -n '1p')
+            kFrag2=$(echo "$kFrags" | tr ',' '\n' | sed -n '2p')
+            # sending to the server
+            curl -X POST -H "Content-Type: application/json" -d "{\"file_id\":\"$assetID\", \"requestor_id\":\"$ID\", \"reencryption_key\":\"$kFrag1\"}" http://localhost:5000/store_key
+        fi
+    elif [[ $OPERATION == "RevokeAclPermission" ]]; then
+        result=$(./gradlew run --args="$OPERATION $ARGS")  
+        if [[ $result == *"Failed"* ]]; then
+            cd ..
+            echo "You are not authorized to revoke permission for this file."
+        else
+            cd ..
+            ID=$ARG2
+            assetID=$ARG1
+            # sending deletion request to the server
+            curl -X POST -H "Content-Type: application/json" -d "{\"file_id\":\"$assetID\", \"requestor_id\":\"$ID\"}" http://localhost:5000/delete_key
+        fi
     elif [[ $OPERATION == "RetrieveOwnFile" ]]; then
         file_info=$(./gradlew run --args="$OPERATION $ARGS" | grep "^\*\*\* Result:")  
         file_assetId=$(echo "$file_info" | grep -oP 'Asset ID: \K[^,]*')
@@ -227,4 +272,3 @@ while true; do
         cd ..
     fi
 done
-
