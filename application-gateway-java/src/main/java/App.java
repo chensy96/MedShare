@@ -25,6 +25,7 @@ import org.hyperledger.fabric.client.identity.X509Identity;
 import org.hyperledger.fabric.client.Proposal.Builder;
 import org.hyperledger.fabric.client.Transaction;
 import org.hyperledger.fabric.client.Proposal;
+
 import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -341,17 +342,24 @@ public final class App {
 	private void updateAclPermission(final String assetID, final String newOrg) throws EndorseException, SubmitException, CommitStatusException, CommitException {
 		System.out.printf("\n--> Submit Transaction: updateAclPermission for asset %s to add %s to access control list", assetID, newOrg);
 		
-		contract.submitTransaction("updateAclPermission", assetID, newOrg);
-		
-		System.out.println("*** Transaction committed successfully");
+		try {
+			// Submit the transaction
+			var evaluateResult = contract.submitTransaction("updateAclPermission", assetID, newOrg);
+			System.out.println("*** Result: " + new String(evaluateResult, StandardCharsets.UTF_8));
+		} catch (GatewayException e) {
+			System.out.println("*** Failed ");
+		}
 	}
 
 	private void revokeAclPermission(final String assetID, final String targetOrg) throws EndorseException, SubmitException, CommitStatusException, CommitException {
 		System.out.printf("\n--> Submit Transaction: revokeAclPermission for asset %s to revoke the permission of %s to access", assetID, targetOrg);
-		
-		contract.submitTransaction("revokeAclPermission", assetID, targetOrg);
-		
-		System.out.println("*** Transaction committed successfully");
+		try {
+			// Submit the transaction
+			var evaluateResult = contract.submitTransaction("revokeAclPermission", assetID, targetOrg);
+			System.out.println("*** Result: " + new String(evaluateResult, StandardCharsets.UTF_8));
+		} catch (GatewayException e) {
+			System.out.println("*** Failed ");
+		}
 	}
 
 	private void requestPermission(final String assetID, final String purpose) throws EndorseException, SubmitException, CommitStatusException, CommitException {
