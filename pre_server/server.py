@@ -39,12 +39,12 @@ def delete_key():
     data = request.get_json()
     file_id = data['file_id']
     requestor_id = data['requestor_id']
-    
+    print(file_id)
+    print(requestor_id)
     key_to_delete = ReencryptionKey.query.filter_by(file_id=file_id, requestor_id=requestor_id).first()
-    
+    print(key_to_delete)
     if key_to_delete is None:
         return jsonify({'message': 'Re-encryption key not found.'}), 404
-
     db.session.delete(key_to_delete)
     db.session.commit()
     return jsonify({'message': 'Re-encryption key deleted successfully.'})
