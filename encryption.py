@@ -14,8 +14,6 @@ def generate_keypair():
     public_key = private_key.public_key()
     # public_key = PublicKey.from_secret_key(private_key)
 
-    print(private_key, public_key)
-
     # Serialize the keys to PEM format
     private_pem = private_key.to_secret_bytes()
     # public_pem = public_key.__bytes__()
@@ -41,8 +39,6 @@ def generate_signers():
     signing_pem = signing_key.to_secret_bytes()
     # public_pem = public_key.__bytes__()
     verifying_pem = bytes(verifying_key)
-    print(signing_pem, verifying_pem)
-
     # Write the keys to files
     with open('signing_key.pem', 'wb') as f:
         f.write(signing_pem)
@@ -56,12 +52,10 @@ def generate_pubkey_string(pubkey_path):
     return pubkey_str
 
 def deserialize_private_key(private_key_pem):
-    print(private_key_pem)
     private_key = SecretKey.from_bytes(private_key_pem) 
     return private_key
 
 def deserialize_public_key(public_key_pem):
-    print(public_key_pem)
     public_key = PublicKey.from_bytes(public_key_pem)
     return public_key
 
@@ -69,20 +63,15 @@ def encrypt_file(public_key_pem, file_path):
     # Read the file 
     with open(file_path, 'rb') as file:
         data = file.read()
-    
     public_key = deserialize_public_key(public_key_pem)
-
     capsule, ciphertext = encrypt(public_key, data)
-
     # Write the encrypted data to a new file
     encrypted_file_path = file_path + "_encrypted"
     with open(encrypted_file_path, 'wb') as f:
-        f.write(ciphertext)
-    
+        f.write(ciphertext) 
     serialized_capsule = bytes(capsule)
     capsuleString = base64.b64encode(serialized_capsule).decode()
     # print(f"Encryption successful. Encrypted file saved at {encrypted_file_path}, capsule: {capsuleString}")
-    # capsule = capsule.replace("Capsule:", "")
     return capsuleString, encrypted_file_path
 
 def split_key(private_key_pem1, public_key_pem2, signing_key1):
@@ -251,15 +240,6 @@ def main():
         public_key_pem = sys.argv[2]
         pubkey_string = generate_pubkey_string(public_key_pem)
         print(f"pubkey_string: {pubkey_string}")
-    elif command == "decrypt":
-        if len(sys.argv) != 4:
-            print("Usage: python3 key_encryption.py decrypt private_key_pem encrypted_file_key")
-            sys.exit(1)
-        with open(sys.argv[2], 'rb') as f:
-            private_key_pem = f.read()
-        encrypted_file_key = sys.argv[3].encode()
-        file_key = decrypt_key(private_key_pem, encrypted_file_key)
-        print(f"Decrypted file key: {file_key}")
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)

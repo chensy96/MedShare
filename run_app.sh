@@ -174,7 +174,8 @@ while true; do
         requestor_ID="$(echo ${ORG:0:1} | tr '[:lower:]' '[:upper:]')${ORG:1}MSP"
         response=$(curl -s -X POST -H "Content-Type: application/json" -d "{\"file_id\":\"$file_assetId\", \"requestor_id\":\"$requestor_ID\", \"capsule\":\"$file_fileKey\", \"verifying_key\":\"$verification_key_string\"}" http://localhost:5000/re_encrypt)
         cfrag=$(echo $response | jq -r '.cfrag')
-        ./file_retrieval.sh $file_assetId $file_fileKey $file_pointer $cfrag $pub_key_string | tee /dev/fd/2
+        ./file_retrieval.sh $file_assetId $file_fileKey $file_pointer $cfrag $pub_key_string
+        #  | tee /dev/fd/2
         # have the file downloaded
     elif [[ $OPERATION == "UpdateAclPermission" ]]; then
         result=$(./gradlew run --args="$OPERATION $ARGS") 

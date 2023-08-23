@@ -8,13 +8,16 @@ pub_key_string=$5
 
 # Set up a second IPFS node (only for the experimental purpose in the)
 # Set default paths for the second IPFS node
-ipfs_staging2=${PWD}/ipfs_node2/staging2
-ipfs_data2=${PWD}/ipfs_node2/storage2
+# ipfs_staging2=${PWD}/ipfs_node2/staging2
+# ipfs_data2=${PWD}/ipfs_node2/storage2
+IPFS_PATH=${PWD}/storage/.ipfs2
+
+ipfs get $ipfs_hash -o ./downloads/$retrieved_file_name
 
 # Retrieve the file inside the IPFS container
-docker exec ipfs_host2 ipfs get $ipfs_hash -o /export/$retrieved_file_name
-# Copy the file from the IPFS container to the host machine
-docker cp ipfs_host2:/export/$retrieved_file_name ./downloads
+# docker exec ipfs_host2 ipfs get $ipfs_hash -o /export/$retrieved_file_name
+# # Copy the file from the IPFS container to the host machine
+# docker cp ipfs_host2:/export/$retrieved_file_name ./downloads
 
 # Ask the user for the path to the private key PEM file
 echo "Enter the path to the private key PEM file:"

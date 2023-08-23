@@ -17,20 +17,23 @@ encrypted_file_key=$(echo "$file_encrypt_output" | grep -oP 'Capsule: \K[^,]*')
 encrypted_file_path=$(echo "$file_encrypt_output" | grep -oP 'Encrypted file path: \K[^,]*')
 
 echo "The encrypted_file_key is: $encrypted_file_key"
-echo "The encrypted_file_path is: $encrypted_file_path"
+# echo "The encrypted_file_path is: $encrypted_file_path"
 
 # IPFS set up
 # Set default paths
-ipfs_staging=${PWD}/ipfs/staging
-ipfs_data=${PWD}/ipfs/storage
+# ipfs_staging=${PWD}/ipfs/staging
+# ipfs_data=${PWD}/ipfs/storage
+IPFS_PATH=${PWD}/storage/.ipfs1
+
 # upload encrypted file to IPFS
 # first copy the file into the staging folder
-cp -r $encrypted_file_path $ipfs_staging
+# cp -r $encrypted_file_path $ipfs_staging
 # Extract the filename from the path
 encrypted_file_name=$(basename "$encrypted_file_path")
 sleep 5
 # Add the file to IPFS on the first node and capture the output
-output1=$(docker exec ipfs_host ipfs add "/export/$encrypted_file_name")
+# output1=$(docker exec ipfs_host ipfs add "/export/$encrypted_file_name")
+output1=$(ipfs add "./$encrypted_file_name")
 # Extract the IPFS hash from the output
 ipfs_hash=$(echo "$output1" | awk '{print $2}')
 
