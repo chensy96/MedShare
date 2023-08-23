@@ -64,7 +64,7 @@ import java.util.regex.Matcher;
 @Default
 public final class AssetManagement implements ContractInterface {
 
-    static final String ASSET_COLLECTION_NAME = "phiCollection";
+    static final String ASSET_COLLECTION_NAME = "medCollection";
     static final String AGREEMENT_KEYPREFIX = "transferAgreement";
 
     private enum AssetTransferErrors {
@@ -510,10 +510,6 @@ public final class AssetManagement implements ContractInterface {
      * @param queryString query string matching state database syntax
      * @return the asset found on the ledger if there was one
      */
-    // @Transaction(intent = Transaction.TYPE.EVALUATE)
-    // public Asset[] QueryAssets(final Context ctx, final String queryString) throws Exception {
-    //     return getQueryResult(ctx, queryString);
-    // }
 
     private String getQueryResult(final Context ctx, final String queryString) throws Exception {
         ChaincodeStub stub = ctx.getStub();

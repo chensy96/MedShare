@@ -1,0 +1,8 @@
+{
+    "index": {
+        "fields": ["dataSubject"]
+    },
+    "name": "dataSubject-index",
+    "type": "json"
+  }
+  

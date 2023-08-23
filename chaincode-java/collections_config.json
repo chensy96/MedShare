@@ -1,6 +1,6 @@
 [
  {
-   "name": "phiCollection",
+   "name": "medCollection",
    "policy": "OR('Org1MSP.member', 'Org2MSP.member', 'Org3MSP.member')",
    "requiredPeerCount": 1,
    "maxPeerCount": 1,
