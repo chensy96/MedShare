@@ -162,4 +162,5 @@ For each organiaztion to be fully functional, you need to use the function "Uplo
 ### Step 3: Manage Files
 Now you can choose the functions from the menu which you want to use. For switching user, you have to quite the process and re-run the script.
 - NOTE: for all the files you need to give to the CLI, input the fullname with the file ending. For example, for uploading a file named "PHI.txt", input "PHI.txt", not "PHI".
-- If you have problem with commands, you can follow the video 'medshare_walkthrough'.
+- For creating ACL, the permitted organiations need to be seperated by commas and pointing to their MSP. For example, to allow org1, org2 and org3 to all be able to access an asset, you need to input exactly "**Org1MSP,Org2MSP,Org3MSP**" for **ACL**.
+- If you have other problems with commands, you can follow the video 'medshare_walkthrough'.
