@@ -1,0 +1,344 @@
+<!doctype html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script>
+    function plotChart(divId, chartData) {
+        // Convert from stringified html, to valid JSON
+        const chartDetails = JSON.parse(chartData.replace(/&quot;/g,'"'));
+        new Chart(document.getElementById(divId), {
+            type: chartDetails.type,
+            data: {
+                labels: chartDetails.labels,
+                datasets: chartDetails.datasets
+            },
+            options: {
+                legend: { display: chartDetails.legend },
+                title: {
+                    display: true,
+                    text: chartDetails.title
+                }
+            }
+        });
+    }
+</script>
+<html>
+<head>
+    <title>Hyperledger Caliper Report</title>
+    <meta charset="UTF-8"/>
+    <style type="text/css">
+        .left-column {
+            position: fixed;
+            width:20%;
+        }
+        .left-column ul {
+            display: block;
+            padding: 0;
+            list-style: none;
+            border-bottom: 1px solid #d9d9d9;
+            font-size: 14px;
+        }
+        .left-column h2{
+            font-size: 24px;
+            font-weight: 400;
+            margin-block-end: 0.5em;
+        }
+        .left-column h3{
+            font-size: 18px;
+            font-weight: 400;
+            margin-block-end: 0.5em;
+        }
+        .left-column li{
+            margin-left: 10px;
+            margin-bottom: 5px;
+            color: #5e6b73;
+        }
+        .right-column {
+            margin-left: 22%;
+            width:60%;
+        }
+        .right-column table {
+            font-size:11px;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .right-column h2{
+            font-weight: 400;
+        }
+        .right-column h3{
+            font-weight: 400;
+        }
+        .right-column h4 {
+            font-weight: 400;
+            margin-block-end: 0;
+        }
+        .right-column th {
+            border-width: 1px;
+            font-size: small;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #f2f2f2;
+        }
+        .right-column td {
+            border-width: 1px;
+            font-size: small;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+            font-weight: 400;
+        }
+        .tag {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+        }
+        pre {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            -khtml-border-radius: 5px;
+            overflow:auto;
+            max-height:300px;
+            font-size:12px;
+        }
+        .charting {
+            display:flex;
+            flex-direction:row;
+            flex-wrap: wrap;
+            page-break-inside: auto;
+        }
+        .chart {
+            display:flex;
+            flex:1;
+            max-width: 50%;
+        }
+    </style>
+</head>
+<body style="font-family: IBM Plex Sans; font-weight: 200;">
+    <main>
+        <div class="left-column">
+            <img src="https://hyperledger.github.io/caliper/assets/img/hyperledger_caliper_logo_color.png" style="width:95%;" alt="">
+            <ul>
+                <h3>&nbspBasic information</h3>
+                <li>DLT: &nbsp<span style="font-weight: 500;">fabric</span></li>
+                <li>Name: &nbsp<span style="font-weight: 500;"></span></li>
+                <li>Description: &nbsp<span style="font-weight: 500;"></span></li>
+                <li>Benchmark Rounds: &nbsp<span style="font-weight: 500;">5</span></li>
+                <li><a href="#benchmarkInfo">Details</a></li>
+            </ul>
+            <ul>
+                <h3>&nbspBenchmark results</h3>
+                <li><a href="#benchmarksummary">Summary</a></li>
+                    <li><a href="#create-asset-concurrency-5">create-asset-concurrency-5</a></li>
+                    <li><a href="#read-asset-concurrency-5">read-asset-concurrency-5</a></li>
+                    <li><a href="#update-acl-concurrency-5">update-acl-concurrency-5</a></li>
+                    <li><a href="#query-asset-by-patient-concurrency-5">query-asset-by-patient-concurrency-5</a></li>
+                    <li><a href="#get-history-for-asset-concurrency-5">get-history-for-asset-concurrency-5</a></li>
+            </ul>
+            <ul>
+                <h3>&nbspSystem under test</h3>
+                <li><a href="#sutdetails">Details</a></li>
+            </ul>
+        </div>
+
+        <div class="right-column">
+            <h1 style="padding-top: 3em; font-weight: 500;">Caliper report</h1>
+            <div style="border-bottom: 1px solid #d9d9d9; margin-bottom: 10px;" id="benchmarksummary">
+                <table style="min-width: 100%;">
+                    <h3>Summary of performance metrics</h3>
+                    <tr>
+                         <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                    </tr>
+
+                    <tr>
+                         <td>create-asset-concurrency-5</td> <td>120</td> <td>0</td> <td>51.3</td> <td>1.79</td> <td>0.38</td> <td>1.15</td> <td>35.5</td>
+                    </tr>
+                    <tr>
+                         <td>read-asset-concurrency-5</td> <td>600</td> <td>0</td> <td>22.4</td> <td>4.38</td> <td>0.12</td> <td>2.68</td> <td>19.7</td>
+                    </tr>
+                    <tr>
+                         <td>update-acl-concurrency-5</td> <td>4</td> <td>116</td> <td>85.0</td> <td>0.63</td> <td>0.37</td> <td>0.49</td> <td>61.4</td>
+                    </tr>
+                    <tr>
+                         <td>query-asset-by-patient-concurrency-5</td> <td>120</td> <td>0</td> <td>68.1</td> <td>2.61</td> <td>0.36</td> <td>1.69</td> <td>33.9</td>
+                    </tr>
+                    <tr>
+                         <td>get-history-for-asset-concurrency-5</td> <td>120</td> <td>0</td> <td>87.0</td> <td>10.14</td> <td>2.96</td> <td>8.54</td> <td>11.0</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="create-asset-concurrency-5">
+                <h2>Benchmark round: create-asset-concurrency-5</h2>
+                <p></p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 120
+</pre>
+                        <h3>Performance metrics for create-asset-concurrency-5</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>create-asset-concurrency-5</td> <td>120</td> <td>0</td> <td>51.3</td> <td>1.79</td> <td>0.38</td> <td>1.15</td> <td>35.5</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for create-asset-concurrency-5</h3>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="read-asset-concurrency-5">
+                <h2>Benchmark round: read-asset-concurrency-5</h2>
+                <p></p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 120
+</pre>
+                        <h3>Performance metrics for read-asset-concurrency-5</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>read-asset-concurrency-5</td> <td>600</td> <td>0</td> <td>22.4</td> <td>4.38</td> <td>0.12</td> <td>2.68</td> <td>19.7</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for read-asset-concurrency-5</h3>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="update-acl-concurrency-5">
+                <h2>Benchmark round: update-acl-concurrency-5</h2>
+                <p></p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 120
+</pre>
+                        <h3>Performance metrics for update-acl-concurrency-5</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>update-acl-concurrency-5</td> <td>4</td> <td>116</td> <td>85.0</td> <td>0.63</td> <td>0.37</td> <td>0.49</td> <td>61.4</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for update-acl-concurrency-5</h3>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="query-asset-by-patient-concurrency-5">
+                <h2>Benchmark round: query-asset-by-patient-concurrency-5</h2>
+                <p></p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 120
+</pre>
+                        <h3>Performance metrics for query-asset-by-patient-concurrency-5</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>query-asset-by-patient-concurrency-5</td> <td>120</td> <td>0</td> <td>68.1</td> <td>2.61</td> <td>0.36</td> <td>1.69</td> <td>33.9</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for query-asset-by-patient-concurrency-5</h3>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="get-history-for-asset-concurrency-5">
+                <h2>Benchmark round: get-history-for-asset-concurrency-5</h2>
+                <p></p>
+                <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
+  type: fixed-load
+  opts:
+    transactionLoad: 120
+</pre>
+                        <h3>Performance metrics for get-history-for-asset-concurrency-5</h3>
+                            <table style="min-width: 100%;">
+                                <tr>
+                                     <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
+                                </tr>
+                                <tr>
+                                     <td>get-history-for-asset-concurrency-5</td> <td>120</td> <td>0</td> <td>87.0</td> <td>10.14</td> <td>2.96</td> <td>8.54</td> <td>11.0</td>
+                                </tr>
+                            </table>
+                        <h3>Resource utilization for get-history-for-asset-concurrency-5</h3>
+            </div>
+
+            <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;">
+                <h2>Test Environment</h2>
+                <h3>benchmark config</h3>
+                <pre id="benchmarkInfo" style="overflow: visible;white-space: pre-wrap;max-height:100%;">workers:
+  type: local
+  number: 120
+rounds:
+  - label: create-asset-concurrency-5
+    txNumber: 120
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 120
+    workload:
+      module: benchmarks&#x2F;samples&#x2F;fabric&#x2F;medshare&#x2F;createAsset.js
+  - label: read-asset-concurrency-5
+    txNumber: 600
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 120
+    workload:
+      module: benchmarks&#x2F;samples&#x2F;fabric&#x2F;medshare&#x2F;readAsset.js
+  - label: update-acl-concurrency-5
+    txNumber: 120
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 120
+    workload:
+      module: benchmarks&#x2F;samples&#x2F;fabric&#x2F;medshare&#x2F;updateACL.js
+      arguments:
+        assetID: phi_mock0_read
+        newOrg: Org4MSP
+  - label: query-asset-by-patient-concurrency-5
+    txNumber: 120
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 120
+    workload:
+      module: benchmarks&#x2F;samples&#x2F;fabric&#x2F;medshare&#x2F;queryAsset.js
+      arguments:
+        dataSubject: cbirm1
+  - label: get-history-for-asset-concurrency-5
+    txNumber: 120
+    rateControl:
+      type: fixed-load
+      opts:
+        transactionLoad: 120
+    workload:
+      module: benchmarks&#x2F;samples&#x2F;fabric&#x2F;medshare&#x2F;getHistory.js
+      arguments:
+        assetId: phi_mock0_read
+monitors: null
+resource:
+  - module: docker
+    options:
+      interval: 5
+      containers:
+        - peer0.org1.example.com
+        - &#39;http:&#x2F;&#x2F;192.168.1.100:2375&#x2F;orderer.example.com&#39;
+</pre>
+                <h3>SUT</h3>
+                <pre id="sutdetails">not provided</pre>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

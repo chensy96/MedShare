@@ -1,0 +1,39 @@
+name: Caliper Benchmarks
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  # channelName of mychannel matches the name of the channel created by test network
+  - channelName: mock
+    # the chaincodeIDs of all the fabric chaincodes in caliper-benchmarks
+    contracts:
+    - id: medcare
+
+
+organizations:
+  - mspid: Org1MSP
+    # Identities come from cryptogen created material for test-network
+    identities:
+      certificates:
+      - name: 'owner'
+        clientPrivateKey:
+          path: '../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/users/owner@org1.example.com/msp/keystore/fcea583874f4030a5de0aec6289e58c574a1f8f61f286a68ea66405b2aea8635_sk' 
+        clientSignedCert:
+          path: '../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/users/owner@org1.example.com/msp/signcerts/cert.pem'
+    connectionProfile:
+      path: '../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/connection-org1.yaml'
+      discover: true
+  - mspid: Org2MSP
+    # Identities come from cryptogen created material for test-network
+    identities:
+      certificates:
+      - name: 'buyer'
+        clientPrivateKey:
+          path: '../fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/users/buyer@org2.example.com/msp/keystore/695c147bc30c3dc65264dd165f78a76f653060a6993560d1eed605adec36bf94_sk'
+        clientSignedCert:
+          path: '../fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/users/buyer@org2.example.com/msp/signcerts/cert.pem'
+    connectionProfile:
+      path: '../fabric-samples/test-network/organizations/peerOrganizations/org2.example.com/connection-org2.yaml'
+      discover: true
