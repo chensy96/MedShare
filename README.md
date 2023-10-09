@@ -48,22 +48,15 @@ Ensure that you have Go installed on your machine. If not, you can download and 
 
 ### Step 1: Install Kubo
 
-Clone the Kubo repository and install it:
-
-```bash
-git clone https://github.com/ipfs/kubo.git
-cd kubo
-go install
-```
+- Follow the official instructions on [Installing Hyperledger Fabric](https://docs.ipfs.tech/install/command-line/#system-requirements) to get a IPFS Kubo(a Go-based IPFS implementation) installed on your machine.
 
 ### Step 2: Initialize the First IPFS Node
-
-Create a new directory for the first IPFS node and initialize it:
+Make sure you are in the MedShare repository, then create a new directory for the first IPFS node and initialize it:
 
 ```bash
 mkdir -p storage/.ipfs1
 export IPFS_PATH=./storage/.ipfs1
-kubo init
+ipfs init
 ```
 
 ### Step 3: Initialize the Second IPFS Node
@@ -73,7 +66,7 @@ Create a new directory for the second IPFS node and initialize it:
 ```bash
 mkdir -p storage/.ipfs2
 export IPFS_PATH=./storage/.ipfs2
-kubo init
+ipfs init
 ```
 
 ### Step 4: Start the First IPFS Node
@@ -82,7 +75,7 @@ In the first terminal, start the first IPFS node:
 
 ```bash
 export IPFS_PATH=./storage/.ipfs1
-kubo daemon
+ipfs daemon
 ```
 
 ### Step 5: Start the Second IPFS Node
@@ -92,7 +85,7 @@ Open a second terminal, navigate to the same directory, and start the second IPF
 ```bash
 cd path/to/your/storage/directory
 export IPFS_PATH=./storage/.ipfs2
-kubo daemon
+ipfs daemon
 ```
 
 ### Step 6: Find the Multiaddresses
