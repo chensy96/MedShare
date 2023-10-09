@@ -16,9 +16,9 @@ def generate_keypair():
     private_pem = private_key.to_secret_bytes()
     public_pem = bytes(public_key)
     # Write the keys to files
-    with open('private_key.pem', 'wb') as f:
+    with open('private_key1.pem', 'wb') as f:
         f.write(private_pem)
-    with open('public_key.pem', 'wb') as f:
+    with open('public_key1.pem', 'wb') as f:
         f.write(public_pem)
 
     # Generate key pair 2
@@ -50,19 +50,41 @@ def generate_keypair():
     return timestamp
 
 def generate_signers():
-    # Generate a key pair
+    # Generate a key pair for Org1
     signing_key  = SecretKey.random()
     verifying_key = signing_key.public_key()
-    print(signing_key, verifying_key)
     # Serialize the keys to PEM format
     signing_pem = signing_key.to_secret_bytes()
-    # public_pem = public_key.__bytes__()
     verifying_pem = bytes(verifying_key)
     # Write the keys to files
-    with open('signing_key.pem', 'wb') as f:
+    with open('signing_key1.pem', 'wb') as f:
         f.write(signing_pem)
-    with open('verifying_key.pem', 'wb') as f:
+    with open('verifying_key1.pem', 'wb') as f:
         f.write(verifying_pem)
+
+    # Generate a key pair for Org2
+    signing_key2  = SecretKey.random()
+    verifying_key2 = signing_key2.public_key()
+    # Serialize the keys to PEM format
+    signing_pem2 = signing_key2.to_secret_bytes()
+    verifying_pem2 = bytes(verifying_key2)
+    # Write the keys to files
+    with open('signing_key2.pem', 'wb') as f:
+        f.write(signing_pem2)
+    with open('verifying_key2.pem', 'wb') as f:
+        f.write(verifying_pem2)
+
+    # Generate a key pair for Org3
+    signing_key3  = SecretKey.random()
+    verifying_key3 = signing_key3.public_key()
+    # Serialize the keys to PEM format
+    signing_pem3 = signing_key3.to_secret_bytes()
+    verifying_pem3 = bytes(verifying_key3)
+    # Write the keys to files
+    with open('signing_key3.pem', 'wb') as f:
+        f.write(signing_pem3)
+    with open('verifying_key3.pem', 'wb') as f:
+        f.write(verifying_pem3)
 
 def generate_pubkey_string(pubkey_path):
     with open(pubkey_path, 'rb') as f:
