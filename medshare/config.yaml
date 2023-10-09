@@ -1,0 +1,60 @@
+test:
+  workers:
+    type: local
+    number: 30
+  rounds:
+    - label: create-asset-concurrency-5
+      txNumber: 30
+      rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 30
+      workload:
+        module: benchmarks/samples/fabric/medshare/createAsset.js
+    - label: read-asset-concurrency-5
+      txNumber: 150
+      rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 30
+      workload:
+        module: benchmarks/samples/fabric/medshare/readAsset.js
+    - label: update-acl-concurrency-5
+      txNumber: 30
+      rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 30
+      workload:
+        module: benchmarks/samples/fabric/medshare/updateACL.js
+        arguments:
+          assetID: phi_mock0_read
+          newOrg: Org4MSP
+    - label: query-asset-by-patient-concurrency-5
+      txNumber: 30
+      rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 30
+      workload:
+        module: benchmarks/samples/fabric/medshare/queryAsset.js
+        arguments:
+          dataSubject: cbirm1
+    - label: get-history-for-asset-concurrency-5
+      txNumber: 30
+      rateControl:
+          type: fixed-load
+          opts:
+            transactionLoad: 30
+      workload:
+        module: benchmarks/samples/fabric/medshare/getHistory.js
+        arguments:
+          assetId: phi_mock0_read
+  monitors:
+  resource:
+  - module: docker
+    options:
+      interval: 5
+      containers:
+      - peer0.org1.example.com
+      - http://192.168.1.100:2375/orderer.example.com
