@@ -120,3 +120,6 @@ ipfs swarm peers
 This should display the multiaddress of the other node, confirming that they are connected.
 
 Now, you have two local Kubo IPFS nodes running and connected. You can start adding and retrieving files on either node. Make sure to replace `<node2-multiaddr>` with the actual multiaddress of your second IPFS node.
+
+
+Make sure to give execute permission to your script file using ```bashchmod +x scriptname.sh``` and then you can run it using ```bash./scriptname.sh```.
