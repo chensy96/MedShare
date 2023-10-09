@@ -5,7 +5,8 @@ Repository of my thesis project, MedShare, a blockchain-based distributed file s
 This repository only covers the codes that interact with the Hyperledger Fabric network, including codes for smart contracts(chain codes), file encryption, and server but does not include the network itself. The network used in this prototype is built upon the Hyperledger test network, including 3 organizations hosted in docker-compose containers, with specific configurations that suit the use case.
 
 # Installation Guide
-
+- The system was built and tested only in **Linux** enviornment. 
+# 
 ## Setting Up Hyperledger Fabric
 
 Ensure you have Hyperledger Fabric v2.5 installed and running for this project. The platform operates within Docker containers. Follow the steps below to set up your environment.
@@ -48,7 +49,7 @@ Ensure that you have Go installed on your machine. If not, you can download and 
 
 ### Step 1: Install Kubo
 
-- Follow the official instructions on [Installing Hyperledger Fabric](https://docs.ipfs.tech/install/command-line/#system-requirements) to get a IPFS Kubo(a Go-based IPFS implementation) installed on your machine.
+- Follow the official instructions on [Install official IPFS distributions](https://docs.ipfs.tech/install/command-line/#system-requirements) to get IPFS Kubo (a Go-based IPFS implementation) installed on your machine.
 
 ### Step 2: Initialize the First IPFS Node
 Make sure you are in the MedShare repository, then create a new directory for the first IPFS node and initialize it:
