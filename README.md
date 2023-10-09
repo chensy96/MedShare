@@ -121,5 +121,16 @@ This should display the multiaddress of the other node, confirming that they are
 
 Now, you have two local Kubo IPFS nodes running and connected. You can start adding and retrieving files on either node. Make sure to replace `<node2-multiaddr>` with the actual multiaddress of your second IPFS node.
 
+## Setting Up MedShare Components
+- In this section, The following setups needed to be done: 1. Create the PRE server in Docker 2. Create mock users and channels in the blockchain network 3. Install the chaincodes on the blockchain nodes. 4. Create organization keys. The file 'system_setup.sh' will help to automatically accompanish these tasks, but might need manual changes to fit different systems and enviornments.
+- Make sure to give execute permission to your script file using ```bashchmod +x system_setup.sh``` and then you can run it using ```bash./system_setup.sh```.
+# 
+### Run Set Up Script
 
-Make sure to give execute permission to your script file using ```bashchmod +x scriptname.sh``` and then you can run it using ```bash./scriptname.sh```.
+```bash
+./system_setup.sh
+```
+if no error is displayed, you should see a container called _'pre_server'_ in your Docker, peer nodes in the Blockchain compose, chaincodes containers outside of the compose, and pairs of keys generated in the repository. The _private_key_ and _public_key_ are asymmetric key pairs for Org1 and the _private_key2_ and _public_key2_ are for Org 2. 
+
+### Error Handling
+In case of errors within running the scripts or needs of customazation, you can refer to the offcial guide https://hyperledger-fabric.readthedocs.io/en/release-2.5/deploy_chaincode.html on deploying chaincodes to your network. The chaincode of this work is included in the folder _'chaincode-java'_ as the source codes, which can be altered and re-build, and the ready-to-be-installed version is also included as _'medcare.tar.gt'_ for the newest version with indexes, and 'medshare.tar.gz' for the old version.
