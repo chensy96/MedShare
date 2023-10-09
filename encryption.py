@@ -9,22 +9,41 @@ import sys
 import base64
 
 def generate_keypair():
-    # Generate a key pair
+    # Generate key pair 1
     private_key = SecretKey.random()
     public_key = private_key.public_key()
-    # public_key = PublicKey.from_secret_key(private_key)
-
     # Serialize the keys to PEM format
     private_pem = private_key.to_secret_bytes()
-    # public_pem = public_key.__bytes__()
     public_pem = bytes(public_key)
-    print(private_pem, public_pem)
-
     # Write the keys to files
-    with open('private_key22.pem', 'wb') as f:
+    with open('private_key.pem', 'wb') as f:
         f.write(private_pem)
-    with open('public_key22.pem', 'wb') as f:
+    with open('public_key.pem', 'wb') as f:
         f.write(public_pem)
+
+    # Generate key pair 2
+    private_key2 = SecretKey.random()
+    public_key2 = private_key2.public_key()
+    # Serialize the keys to PEM format
+    private_pem2 = private_key2.to_secret_bytes()
+    public_pem2 = bytes(public_key2)
+    # Write the keys to files
+    with open('private_key2.pem', 'wb') as f:
+        f.write(private_pem2)
+    with open('public_key2.pem', 'wb') as f:
+        f.write(public_pem2)
+
+    # Generate key pair 3
+    private_key3 = SecretKey.random()
+    public_key3 = private_key3.public_key()
+    # Serialize the keys to PEM format
+    private_pem3 = private_key3.to_secret_bytes()
+    public_pem3 = bytes(public_key3)
+    # Write the keys to files
+    with open('private_key3.pem', 'wb') as f:
+        f.write(private_pem3)
+    with open('public_key3.pem', 'wb') as f:
+        f.write(public_pem3)
 
     # Get the current timestamp
     timestamp = int(time.time())
