@@ -47,7 +47,7 @@ public final class App {
 	// Update MSP ID based on organization.
     private static final String MSP_ID = ORG.substring(0, 1).toUpperCase() + ORG.substring(1) + "MSP";
 	private static final String CHANNEL_NAME = System.getenv().getOrDefault("CHANNEL_NAME", "mako");
-	private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "request");
+	private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "medcare");
 	private static final String USER = System.getenv().getOrDefault("USER", "owner");
 
 	// Update paths to crypto materials based on organization and user.
