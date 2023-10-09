@@ -1,66 +1,101 @@
 #!/bin/bash
+# This is a helper script for running a few commands to prepare the running enviornment for MedShare prototype.
+# This script does: 1. Create the PRE server in Docker 2. Create mock users and channels in the blockchain network
+# 3. Install the chaincodes on the blockchain nodes. 4. Create organization keys.
 
-# Asymmetric key pair set up
-echo "Generating a new pair of asymmetric keys for your organization..."
-# Call the Python script to generate a key pair
-output=$(python3 key_encryption.py generate)
+# 1. Create the PRE server in Docker
+cd pre_server
+docker build --no-cache -t preserver .
+docker run --name pre_server -p 5000:5000 -v sqlite-data:/var/lib/sqlite preserver
+cd ..
 
-# Print the output
-echo "$output"
+# 2. Create mock users and channels in the blockchain network and 3. Install the chaincodes on the blockchain nodes
+cd ..
+cd fabric-samples/test-network
+#bring up the network with Org1 and Org2 with certificate orthority to channel mako
+./network.sh up -ca -s couchdb
+./network.sh createChannel -c mako
+# add Org3 to channel
+cd addOrg3
+./addOrg3.sh up -c mako
+cd .. 
+# Copy the chaincode into the blockchain folder
+cp ../../MedShare/medcare.tar.gz .
+# act as Org1 Admin
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export CORE_PEER_ADDRESS=localhost:7051
+# install the chaincode on the peer from Org1
+peer lifecycle chaincode install medcare.tar.gz
+# act as Org2 Admin
+export CORE_PEER_LOCALMSPID="Org2MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+export CORE_PEER_ADDRESS=localhost:9051
+# install the chaincode on the peer from Org2
+peer lifecycle chaincode install medcare.tar.gz
+# act as Org3 Admin
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="Org3MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+export CORE_PEER_ADDRESS=localhost:11051
+# install the chaincode on the peer from Org3
+peer lifecycle chaincode install medcare.tar.gz 
 
-# IPFS set up
-# Set default paths
-ipfs_staging=${PWD}/ipfs/staging
-ipfs_data=${PWD}/ipfs/storage
+# Run the command and filter out the line containing "medcare_1.0"
+CC_PACKAGE_ID=$(peer lifecycle chaincode queryinstalled | grep "medcare_1.0" | awk '{print $3}' | sed 's/,$//')
+# Export the variable
+export CC_PACKAGE_ID
+# Approve the chaincode definition for all organizations
+peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --channelID mako --name medcare --version 1.0 --collections-config ../../MedShare/chaincode-java/collections_config.json --signature-policy "OR('Org1MSP.member','Org2MSP.member','Org3MSP.member')" --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+# act as Org2 Admin
+export CORE_PEER_LOCALMSPID="Org2MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+export CORE_PEER_ADDRESS=localhost:9051
+peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --channelID mako --name medcare --version 1.0 --collections-config ../../MedShare/chaincode-java/collections_config.json --signature-policy "OR('Org1MSP.member','Org2MSP.member','Org3MSP.member')" --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+# act as Org1 Admin
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+export CORE_PEER_ADDRESS=localhost:7051
+peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --channelID mako --name medcare --version 1.0 --collections-config ../../MedShare/chaincode-java/collections_config.json --signature-policy "OR('Org1MSP.member','Org2MSP.member','Org3MSP.member')" --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+# Committing the chaincode definition to the channel using 1 organization
+peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --channelID mako --name medcare --version 1.0 --sequence 1 --collections-config ../../MedShare/chaincode-java/collections_config.json --signature-policy "OR('Org1MSP.member','Org2MSP.member','Org3MSP.member')" --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" --peerAddresses localhost:11051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt"
 
-# Ask the user if they want to use their own paths
-echo "The default path for IPFS staging is $ipfs_staging. Would you like to use a different path? (yes/no)"
-read answer
-if [ "$answer" == "yes" ]; then
-    echo "Enter the path for IPFS staging:"
-    read ipfs_staging
-fi
+# Create users: owner, patient1, patient2 for Org1 
+export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=$PWD/../config/
+export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/peerOrganizations/org1.example.com/
+fabric-ca-client register --caname ca-org1 --id.name owner --id.secret ownerpw --id.type client --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+fabric-ca-client enroll -u https://owner:ownerpw@localhost:7054 --caname ca-org1 -M "${PWD}/organizations/peerOrganizations/org1.example.com/users/owner@org1.example.com/msp" --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+cp "${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org1.example.com/users/owner@org1.example.com/msp/config.yaml"
 
-echo "The default path for IPFS storage is $ipfs_data. Would you like to use a different path? (yes/no)"
-read answer
-if [ "$answer" == "yes" ]; then
-    echo "Enter the path for IPFS storage:"
-    read ipfs_data
-fi
+fabric-ca-client register --caname ca-org1 --id.name patient1 --id.secret patient1pw --id.type client --id.attrs 'role=patient:ecert' --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+fabric-ca-client enroll -u https://patient1:patient1pw@localhost:7054 --caname ca-org1 -M "${PWD}/organizations/peerOrganizations/org1.example.com/users/patient1@org1.example.com/msp" --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+cp "${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org1.example.com/users/patient1@org1.example.com/msp/config.yaml"
 
-# Run the Docker command
-docker run -d --name ipfs_host -v $ipfs_staging:/export -v $ipfs_data:/data/ipfs -p 4001:4001 -p 4001:4001/udp -p 127.0.0.1:8080:8080 -p 127.0.0.1:5001:5001 ipfs/go-ipfs:latest
+fabric-ca-client register --caname ca-org1 --id.name patient2 --id.secret patient2pw --id.type client --id.attrs 'role=patient:ecert' --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+fabric-ca-client enroll -u https://patient2:patient2pw@localhost:7054 --caname ca-org1 -M "${PWD}/organizations/peerOrganizations/org1.example.com/users/patient2@org1.example.com/msp" --tls.certfiles "${PWD}/organizations/fabric-ca/org1/tls-cert.pem"
+cp "${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org1.example.com/users/patient2@org1.example.com/msp/config.yaml"
 
-# Set up a second IPFS node (only for the experimental purpose in the)
-# Set default paths for the second IPFS node
-ipfs_staging2=${PWD}/ipfs_node2/staging2
-ipfs_data2=${PWD}/ipfs_node2/storage2
+# Create users: buyer, patient3 for Org2
+export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/peerOrganizations/org2.example.com/
+fabric-ca-client register --caname ca-org2 --id.name buyer --id.secret buyerpw --id.type client --tls.certfiles "${PWD}/organizations/fabric-ca/org2/tls-cert.pem"
+fabric-ca-client enroll -u https://buyer:buyerpw@localhost:8054 --caname ca-org2 -M "${PWD}/organizations/peerOrganizations/org2.example.com/users/buyer@org2.example.com/msp" --tls.certfiles "${PWD}/organizations/fabric-ca/org2/tls-cert.pem"
+cp "${PWD}/organizations/peerOrganizations/org2.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org2.example.com/users/buyer@org2.example.com/msp/config.yaml"
 
-# Ask the user if they want to use their own paths for the second IPFS node
-echo "The default path for the second IPFS staging is $ipfs_staging2. Would you like to use a different path? (yes/no)"
-read answer
-if [ "$answer" == "yes" ]; then
-    echo "Enter the path for the second IPFS staging:"
-    read ipfs_staging2
-fi
+fabric-ca-client register --caname ca-org2 --id.name patient3 --id.secret patient3pw --id.type client --tls.certfiles "${PWD}/organizations/fabric-ca/org2/tls-cert.pem"
+fabric-ca-client enroll -u https://patient3:patient3pw@localhost:8054 --caname ca-org2 -M "${PWD}/organizations/peerOrganizations/org2.example.com/users/patient3@org2.example.com/msp" --tls.certfiles "${PWD}/organizations/fabric-ca/org2/tls-cert.pem"
+cp "${PWD}/organizations/peerOrganizations/org2.example.com/msp/config.yaml" "${PWD}/organizations/peerOrganizations/org2.example.com/users/patient3@org2.example.com/msp/config.yaml"
 
-echo "The default path for the second IPFS storage is $ipfs_data2. Would you like to use a different path? (yes/no)"
-read answer
-if [ "$answer" == "yes" ]; then
-    echo "Enter the path for the second IPFS storage:"
-    read ipfs_data2
-fi
+# 4. Create organization keys
+cd ../../MedShare
+# Call the Python script to generate key pairs
+output=$(python3 encryption.py generate)
 
-# Run the Docker command for the second IPFS node
-docker run -d --name ipfs_host2 -e IPFS_PROFILE=server -v $ipfs_staging2:/export -v $ipfs_data2:/data/ipfs -p 4101:4001 -p 4101:4001/udp -p 127.0.0.1:8180:8080 -p 127.0.0.1:5101:5001 ipfs/go-ipfs:latest
-
-# get node 1's multi address to connect to node 2 to speed up the communication.
-# only valid in the prototype, in the production network, it needs to be replaced by the ip address of one hoster.
-# Get the ID of the IPFS node
-ID=$(docker exec ipfs_host ipfs id -f="<id>\n")
-# Get the JSON output from the 'ipfs id' command
-JSON=$(docker exec ipfs_host ipfs id)
-# Use 'jq' to parse the JSON and get the first address
-ADDRESS=$(echo $JSON | jq -r '.Addresses[0]')
-# Connect the second IPFS node to the first
-docker exec ipfs_host2 ipfs swarm connect /ip4/${ADDRESS}/tcp/4001/p2p/${ID}
+ 
