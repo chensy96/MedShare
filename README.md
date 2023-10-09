@@ -138,7 +138,7 @@ In case of errors within running the scripts or needs of customazation, you can 
 ## Running the System
 Assuming all the former steps were successful, now you can try to run the application from terminal.
 
-### Step 1: Initialization
+### Initialization
 - Start your Docker, make sure the compose is running.
 - Start the Proxy Re-encryption Server:
 ```bash
