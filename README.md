@@ -2,10 +2,10 @@
 Repository of my thesis project, MedShare, a blockchain-based distributed file share and management system for medical data. 
 
 ## Notice
-This repository only covers the codes that interact with the Hyperledger Fabric network, including codes for smart contracts(chain codes), file encryption, and server but does not include the network itself. The network used in this prototype is built upon the Hyperledger test network, including 3 organizations hosted in docker-compose containers, with specific configurations that suit the use case.
+This repository only covers the codes that interact with the Hyperledger Fabric network, including codes for smart contracts(chain codes), file encryption, and servers but does not include the network itself. The network used in this prototype is built upon the Hyperledger test network, including 3 organizations hosted in docker-compose containers, with specific configurations that suit the use case.
 
 # Installation Guide
-- The system was built and tested only in **Linux** enviornment. 
+- The system was built and tested only in the **Linux** environment. 
 # 
 ## Setting Up Hyperledger Fabric
 
@@ -122,7 +122,7 @@ This should display the multiaddress of the other node, confirming that they are
 Now, you have two local Kubo IPFS nodes running and connected. You can start adding and retrieving files on either node. Make sure to replace `<node2-multiaddr>` with the actual multiaddress of your second IPFS node.
 
 ## Setting Up MedShare Components
-- In this section, The following setups needed to be done: 1. Create the PRE server in Docker 2. Create mock users and channels in the blockchain network 3. Install the chaincodes on the blockchain nodes. 4. Create organization keys. The file 'system_setup.sh' will help to automatically accompanish these tasks, but might need manual changes to fit different systems and enviornments.
+- In this section, The following setups needed to be done: 1. Create the PRE server in Docker 2. Create mock users and channels in the blockchain network 3. Install the chaincodes on the blockchain nodes. 4. Create organization keys. The file 'system_setup.sh' will help to automatically accomplish these tasks, but might need manual changes to fit different systems and environments.
 - Make sure to give execute permission to your script file using ```bashchmod +x system_setup.sh``` and then you can run it using ```bash./system_setup.sh```.
  
 ### Run Set Up Script
@@ -163,4 +163,4 @@ For each organiaztion to be fully functional, you need to use the function "Uplo
 Now you can choose the functions from the menu which you want to use. For switching user, you have to quite the process and re-run the script.
 - NOTE: for all the files you need to give to the CLI, input the fullname with the file ending. For example, for uploading a file named "PHI.txt", input "PHI.txt", not "PHI".
 - For creating ACL, the permitted organiations need to be seperated by commas and pointing to their MSP. For example, to allow org1, org2 and org3 to all be able to access an asset, you need to input exactly "**Org1MSP,Org2MSP,Org3MSP**" for **ACL**.
-- If you have other problems with commands, you can follow the video 'medshare_walkthrough'.
+- If you have other problems with commands, you can follow the video 'medshare_walkthrough': https://youtu.be/xrGE4VSKnro?si=xnd1myykWU-2eo52
